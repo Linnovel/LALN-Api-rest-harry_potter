@@ -25,8 +25,11 @@ class Character(db.Model):
     gender = db.Column(db.String(50), unique=False, nullable=False)
     species = db.Column(db.String(40), unique=False, nullable=False)
     is_alive = db.Column(db.Boolean(), unique=False, nullable=False)
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"), nullable=True)
 
-    caste = db.relationship("Cast", backref="character", lazy=True) 
+    #relationships
+
+    caste = db.relationship("Cast", backref="character", lazy=True)
 
     def __repr__(self):
         return f'<Character {self.name}>' 
@@ -38,6 +41,7 @@ class Character(db.Model):
             "gender": self.gender,
             "species" : self.species,
             "is_alive" : self.is_alive
+            
         }
 
 class Book(db.Model):
@@ -79,16 +83,18 @@ class Cast(db.Model):
             "book_id": self.book_id
         }
 
-# class House(db.Model):
-#     __tablename__ = 'house'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(50),)
+class House(db.Model):
+    __tablename__ = 'house'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
 
-#     def __repr__(self):
-#         return f'<House {self.name}>'
+    characters = db.relationship("Character" , backref="house", lazy=True)
 
-#     def serialize(self):
-#         return {
-#             "id" : self.id,
-#             "name" : self.name
-#         }
+    def __repr__(self):
+        return f'<House {self.name}>'
+
+    def serialize(self):
+        return {
+            "id" : self.id,
+            "name" : self.name
+        }

@@ -239,8 +239,26 @@ def create_cast(book_id, character_id):
     except Exception as error:
         db.session.rollback()
         return error, 500
-    
 
+#todos los personajes que salieron en los libros
+@app.route('/cast/book/<int:id>', methods=['GET'])
+def get_cast_book(id):
+    
+    casts = Cast.query.filter_by(book_id=id).all()
+
+    if not casts:
+        return jsonify({"Error" : "No cast member found"}), 404
+
+    return jsonify({"cast" : [cast.serialize() for cast in casts]})
+
+#buscar los libros en que aparece el personaje
+@app.route('/cast/character/<int:id>', methods=['GET'])
+def get_books_from_characters(id):
+
+    casts = Cast.query.filter_by(character_id=id).all()
+    if not casts:
+        return jsonify({"Error" : "No book for this character"}), 404
+    return jsonify({"books": [book.serialize() for book in casts]})
 
 
 # this only runs if `$ python src/app.py` is executed
